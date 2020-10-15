@@ -49,6 +49,7 @@ public class Azul: MonoBehaviour {
     int score = 1;
     List<int> storedRows = new List<int>();
     char[] alphabet = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+    string[] colorNames = new string[] {"Blue", "Yellow", "Red", "Black", "White"};
     public KMBombModule module;
     public KMBombInfo bomb;
     public KMAudio sound;
@@ -78,11 +79,12 @@ public class Azul: MonoBehaviour {
         foreach(KMSelectable i in selectables)
         {
             KMSelectable j = i;
-            j.OnInteract += delegate { submitScore(i, Array.IndexOf(selectables, j)); return false; };
+            j.OnInteract += delegate { submitScore(i, Array.IndexOf(selectables, j)+1); return false; };
         }
     }
 
     void Start () {
+	storedRows.Clear()
         foreach (MeshRenderer i in tiles)
         {
             i.enabled = true;
@@ -107,6 +109,7 @@ public class Azul: MonoBehaviour {
                  j = rnd.Range(1, 5);
                  k = rnd.Range(0, 5);
             } while (!board[j][k] || storedRows.Contains(j));
+	    Debug.LogFormat("[Azul #{0}] Row {1} is {2}, Incomplete", moduleID, j, colorNames[layout[j][k]] );
             board[j][k] = false;
             for (int l = rnd.Range(1, tileArrays[j].Length); l < tileArrays[j].Length; l++ )
             {
@@ -125,12 +128,13 @@ public class Azul: MonoBehaviour {
         {
             int j;
             int k;
+            k = rnd.Range(0, 5);
             do
             {
-                 j = rnd.Range(1, 5);
-                 k = rnd.Range(0, 5);
-            } while (!board[j][k] || storedRows.Contains(j));
+                 j = rnd.Range(0, 5);
+            } while (storedRows.Contains(j));
             board[j][k] = false;
+            Debug.LogFormat("[Azul #{0}] Row {1} is {2}, Complete", moduleID, j, colorNames[layout[j][k]] );
 	    int storedScore = score;
 	    for (int l = k; l < 5 l++)
             {
@@ -194,6 +198,7 @@ public class Azul: MonoBehaviour {
 	    {
 		    score += 1;
 	    }
+	    Debug.LogFormat("[Azul #{0}] The score to submit is {1}.", moduleID, score );
             for (int l = 0; l < tileArrays[j].Length; l++)
             {
                     tileArrays[j][l].material = colors[layout[j][k]];
@@ -215,6 +220,42 @@ public class Azul: MonoBehaviour {
     }
 
     void submitScore(KMSelectable selectable, int index) {
-		
+	    selectable.AddInteractionPuch();
+	    Debug.LogFormat("[Azul #{0}] You submitted a score of {1}", moduleID, index);
+	    if (index == score)
+	    {
+		    Debug.LogFormat("[Azul #{0}] That was correct.  Module solved.", moduleID);
+		    module.HandlePass();
+		    solved = true;
+		    sound.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.CorrectChime, transform);
+		    selectable.GetComponent<MeshRenderer>().enabled = true;
+	    }
+	     else
+            {
+                module.HandleStrike();
+                Debug.LogFormat("[Azul #{0}] That was incorrect.  Strike!", moduleID);
+                Start();
+            }
 	}
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        command = command.ToLowerInvariant();
+	int result;
+	bool isNum = TryParse (command; out int result);
+        if (result < 1 || result > 20)
+        {
+            yield return "sendtochaterror Invalid command.";
+            yield break;
+        }
+	else
+	{
+		yield return null;
+		selectables[result-1].OnInteract;
+	}
+    }
+ IEnumerator TwitchHandleForcedSolve()
+                {
+                    yield return null;
+                    selectables[score-1].OnInteract;
+                }
 }
