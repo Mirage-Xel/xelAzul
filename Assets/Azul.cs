@@ -121,6 +121,86 @@ public class Azul: MonoBehaviour {
             }
             storedRows.Add(j);
         }
+	            for (int i = 0; i < 2; i++)
+        {
+            int j;
+            int k;
+            do
+            {
+                 j = rnd.Range(1, 5);
+                 k = rnd.Range(0, 5);
+            } while (!board[j][k] || storedRows.Contains(j));
+            board[j][k] = false;
+	    int storedScore = score;
+	    for (int l = k; l < 5 l++)
+            {
+                    if (board[j][l])
+		    {
+		    	score++;
+		    }
+		    else
+		    {
+		  	break;
+		    }
+            }
+	    for (int l = k; l > -1; l--)
+            {
+                    if (board[j][l])
+		    {
+		    	score++;
+		    }
+		    else
+		    {
+		 	   break;
+		    }
+            }
+	    if (storedScore != score)
+	    {
+		    score += 1;
+	    }
+            for (int l = 0; l < tileArrays[j].Length; l++)
+            {
+                    tileArrays[j][l].material = colors[layout[j][k]];
+            }
+            storedRows.Add(j);
+	    int storedScore = score;
+	    for (int l = j; l < 5; l++)
+            {
+                    if (board[l][k])
+		    {
+		    	score++;
+		    }
+		    else
+		    {
+		  	break;
+		    }
+            }
+	    for (int l = k; l > -1; l--)
+            {
+                    if (board[l][k])
+		    {
+		    	score++;
+		    }
+		    else
+		    {
+		 	   break;
+		    }
+            }
+	    if (storedScore != score)
+	    {
+		    score += 1;
+	    }
+	    if (storedScore == 0)
+	    {
+		    score += 1;
+	    }
+            for (int l = 0; l < tileArrays[j].Length; l++)
+            {
+                    tileArrays[j][l].material = colors[layout[j][k]];
+            }
+            storedRows.Add(j);
+        }
+        }
         foreach (MeshRenderer[] i in tileArrays)
         {
             if (!storedRows.Contains(Array.IndexOf(tileArrays, i)))
